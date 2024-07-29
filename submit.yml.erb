@@ -36,9 +36,6 @@ script:
       cpu: "<%= num_cores %>"
       memory: "<%= num_mem %>Gi"
     mounts:
-      - type: emptydir
-        name: ccache
-        path: /dev/shm
       - type: nfs
         name: home
         host: <%= ood_nfs_server %>
@@ -49,6 +46,11 @@ script:
         host: <%= software_nfs_server %>
         path: /mnt/data-migration
         destination_path: /opt/nesi
+      - type: host
+        name: nslcd-socket
+        host_type: Socket
+        path: /var/run/nslcd/socket
+        destination_path: /var/run/nslcd/socket
       - type: host
         name: nsswitch-conf
         host_type: File
