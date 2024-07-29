@@ -24,6 +24,9 @@ module list
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
+# copying config file for debugging
+cp /ood/ondemand_config.py ./
+
 # Launch the Jupyter Notebook Server
 set -x
-jupyter lab --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
+jupyter lab --config="/ood/ondemand_config.py" <%= context.extra_jupyter_args %>
