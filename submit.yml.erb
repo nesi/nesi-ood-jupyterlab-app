@@ -8,7 +8,7 @@
 
    user = OodSupport::User.new
 
-   ood_nfs_server = Resolv.getaddress("ood-dev-nfs-node")
+   ood_nfs_server = Resolv.getaddress("ood-nfs-node")
    software_nfs_server = Resolv.getaddress("external-nfs")
 %>
 ---
@@ -18,7 +18,7 @@ script:
   native:
     container:
       name: "jupyterlab"
-      image: "ghcr.io/lbrick/nesi-docker-base/nesi-docker-base:0.2"
+      image: "ghcr.io/lbrick/nesi-docker-base/nesi-docker-base:0.3"
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
       working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
       restart_policy: 'OnFailure'
@@ -46,11 +46,6 @@ script:
         host: <%= software_nfs_server %>
         path: /mnt/data-migration
         destination_path: /opt/nesi
-      - type: host
-        name: nslcd-socket
-        host_type: Socket
-        path: /var/run/nslcd/socket
-        destination_path: /var/run/nslcd/socket
       - type: host
         name: nsswitch-conf
         host_type: File
