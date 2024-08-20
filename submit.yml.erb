@@ -18,7 +18,7 @@ script:
   native:
     container:
       name: "jupyterlab"
-      image: "ghcr.io/lbrick/nesi-docker-base/nesi-docker-base:0.3"
+      image: "ghcr.io/lbrick/nesi-docker-base/nesi-docker-base:0.7"
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
       working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
       restart_policy: 'OnFailure'
