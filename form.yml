@@ -32,8 +32,6 @@ attributes:
   extra_jupyter_args: ""
   
   node: ""
-  bc_queue:
-    value: interactive
   bc_num_hours:
     max: 24
     min: 1
@@ -66,11 +64,10 @@ attributes:
 form:
   - modules
   - extra_jupyter_args
-  - bc_queue
   - bc_num_hours
   - num_cores
   - num_mem
   - node
 description: Request a Jupyter Lab server
 submit: submit.yml.erb
-title: Jupyter Lab - staging
+title: Jupyter Lab
