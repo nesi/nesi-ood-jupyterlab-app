@@ -25,7 +25,13 @@ attributes:
   #     modules: "python/3.5"
   # @example Using combination of modules
   #     modules: "python/3.5 cuda/8.0.44"
-  modules: "JupyterLab/2024.08.0-foss-2023a-4.2.4"
+  jupyterlab_module:
+    widget: select
+    label: "JupyterLab module"
+    options:
+      - [ "2024.08.1-foss-2023a-4.2.4", "JupyterLab/.2024.08.1-foss-2023a-4.2.4" ]
+      - [ "2024.08.0-foss-2023a-4.2.4", "JupyterLab/2024.08.0-foss-2023a-4.2.4" ]
+      - [ "2023.11.0-gimkl-2022a-3.6.3", "JupyterLab/2023.11.0-gimkl-2022a-3.6.3" ]
 
   # Any extra command line arguments to feed to the `jupyter notebook ...`
   # command that launches the Jupyter notebook within the batch job
@@ -62,7 +68,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
-  - modules
+  - jupyterlab_module
   - extra_jupyter_args
   - bc_num_hours
   - num_cores

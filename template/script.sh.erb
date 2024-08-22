@@ -12,16 +12,14 @@ cd "${HOME}"
 # Start Jupyter Notebook Server
 #
 
-<%- unless context.modules.blank? -%>
 # Purge the module environment to avoid conflicts
 module purge
 
 # Load the require modules
-module load <%= context.modules %>
+module load <%= context.jupyterlab_module %>
 
 # List loaded modules
 module list
-<%- end -%>
 
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
