@@ -69,6 +69,8 @@ script:
             c.ServerApp.root_dir = '<%= user.home %>'
             c.ServerApp.disable_check_xsrf = True
             c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
+            c.LabApp.extension_manager = 'readonly'
+            c.PluginManager.level = 'user'
           mount_path: '/ood'
     init_containers:
     - name: "init-secret"
