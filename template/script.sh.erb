@@ -21,6 +21,10 @@ module load <%= context.jupyterlab_module %>
 # List loaded modules
 module list
 
+# force disable the announcements extension
+echo "Disabling announcements extension..."
+jupyter labextension disable --level=user "@jupyterlab/apputils-extension:announcements"
+
 # Benchmark info
 echo "TIMING - Starting jupyter at: $(date)"
 
