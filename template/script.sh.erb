@@ -18,6 +18,11 @@ module purge
 # Load the require modules
 module load <%= context.jupyterlab_module %>
 
+# unload the OpenSSL module as it does not work properly (has a broken symbolic link)
+# however the OpenSSL installed in the docker image works fine
+# NOTE: may need to check this whenever the docker image is updated
+ml -OpenSSL
+
 # List loaded modules
 module list
 
