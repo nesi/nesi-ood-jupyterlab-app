@@ -43,6 +43,16 @@ script:
         path: /nesi/home
         destination_path: /nesi/home
       - type: nfs
+        name: project
+        host: <%= ood_nfs_server %>
+        path: /nesi/project
+        destination_path: /nesi/project
+      - type: nfs
+        name: nobackup
+        host: <%= ood_nfs_server %>
+        path: /nesi/nobackup
+        destination_path: /nesi/nobackup
+      - type: nfs
         name: software
         host: <%= software_nfs_server %>
         path: /mnt/data-migration
@@ -66,7 +76,7 @@ script:
             c.ServerApp.port_retries = 0
             c.ServerApp.open_browser = False
             c.ServerApp.allow_origin = '*'
-            c.ServerApp.root_dir = '<%= user.home %>'
+            c.ServerApp.root_dir = "<%= user.home %>/.nesiondemand"
             c.ServerApp.disable_check_xsrf = True
             c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
             c.LabApp.extension_manager = 'pypi'
