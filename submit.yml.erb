@@ -81,6 +81,7 @@ script:
             c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
             c.LabApp.extension_manager = 'pypi'
             c.PluginManager.level = 'user'
+            c.LabServerApp.copy_absolute_path = True
           mount_path: '/ood'
     init_containers:
     - name: "init-secret"
