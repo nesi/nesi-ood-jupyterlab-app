@@ -1,3 +1,9 @@
+<%-
+  groups = OodSupport::User.new.groups.sort_by(&:id).tap { |groups|
+    groups.unshift(groups.delete(OodSupport::Process.group))
+  }.map(&:name).grep(/.*[0-9]{5}/)
+-%>
+
 # Batch Connect app configuration file
 #
 # @note Used to define the submitted cluster, title, description, and
@@ -38,6 +44,14 @@ attributes:
   extra_jupyter_args: ""
   
   node: ""
+  account:
+    label: "Project Code"
+    widget: select
+    options:
+      <%- groups.each do |group| %>
+      - "<%= group %>"
+      <%- end %>
+    required: true
   bc_num_hours:
     max: 24
     min: 1
@@ -68,6 +82,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
+  - account
   - jupyterlab_module
   - extra_jupyter_args
   - bc_num_hours
