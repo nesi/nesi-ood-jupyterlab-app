@@ -33,6 +33,7 @@ script:
         SHELL: "/bin/bash"
         LMOD_SITE_MODULEPATH: "/opt/nesi/CS400_centos7_bdw/modules/all"
         TZ: 'Pacific/Auckland'
+        JUPYTER_JOB_ACCOUNT: "<%= account %>"
       port: "8080"
       cpu: "<%= num_cores %>"
       memory: "<%= num_mem %>Gi"
