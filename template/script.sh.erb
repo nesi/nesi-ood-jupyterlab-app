@@ -36,6 +36,10 @@ echo "TIMING - Starting jupyter at: $(date)"
 # copying config file for debugging
 cp /ood/ondemand_config.py "${SESSION_DIR}"
 
+# set JUPYTER_PATH to include shared custom kernels created by nesi-add-kernel
+export JUPYTER_PATH=/nesi/project/${JUPYTER_JOB_ACCOUNT}/.jupyter/share/jupyter:${JUPYTER_PATH}
+echo "Extending JUPYTER_PATH to include shared kernels from \"/nesi/project/${JUPYTER_JOB_ACCOUNT}\""
+
 # Launch the Jupyter Notebook Server
 set -x
 jupyter lab --config="/ood/ondemand_config.py" <%= context.extra_jupyter_args %>
