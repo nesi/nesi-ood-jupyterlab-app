@@ -42,4 +42,4 @@ echo "Extending JUPYTER_PATH to include shared kernels from \"/nesi/project/${JU
 
 # Launch the Jupyter Notebook Server
 set -x
-jupyter lab --config="/ood/ondemand_config.py" <%= context.extra_jupyter_args %>
+jupyter lab --config="${CONFIG_FILE}"
