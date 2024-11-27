@@ -1,11 +1,4 @@
 <%
-   pwd_cfg = "c.ServerApp.password=u\'sha1:${SALT}:${PASSWORD_SHA1}\'"
-   host_port_cfg = "c.ServerApp.base_url=\'/node/${HOST_CFG}/${PORT_CFG}/\'"
-
-   configmap_filename = "ondemand_config.py"
-   configmap_data = "c.NotebookApp.port = 8080"
-   utility_img = "kandnesi/ood-k8s-utils:v1.0.1"
-
    user = OodSupport::User.new
 
    ood_nfs_server = Resolv.getaddress("ood-nfs-node")
@@ -81,38 +74,3 @@ script:
         host_type: File
         path: /etc/nsswitch.conf
         destination_path: /etc/nsswitch.conf
-    configmap:
-      files:
-        - filename: "<%= configmap_filename %>"
-          data: |
-            c.ServerApp.ip = '0.0.0.0'
-            c.ServerApp.port = 8080
-            c.ServerApp.port_retries = 0
-            c.ServerApp.open_browser = False
-            c.ServerApp.allow_origin = '*'
-            c.ServerApp.root_dir = "<%= user.home %>"
-            c.ServerApp.disable_check_xsrf = True
-            c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
-            c.LabApp.extension_manager = 'pypi'
-            c.PluginManager.level = 'user'
-            c.LabServerApp.copy_absolute_path = True
-            c.FileContentsManager.delete_to_trash = False
-          mount_path: '/ood'
-    init_containers:
-    - name: "init-secret"
-      image: "<%= utility_img %>"
-      command: 
-      - "/bin/save_passwd_as_secret"
-      - "user-<%= user.name %>"
-    - name: "add-passwd-to-cfg"
-      image: "<%= utility_img %>"
-      command:
-      - "/bin/bash"
-      - "-c"
-      - "source /bin/passwd_from_secret; source /bin/create_salt_and_sha1; /bin/add_line_to_configmap \\\"<%= pwd_cfg %>\\\" <%= configmap_filename %>"
-    - name: "add-hostport-to-cfg"
-      image: "<%= utility_img %>"
-      command:
-      - "/bin/bash"
-      - "-c"
-      - "source /bin/find_host_port; /bin/add_line_to_configmap \\\"<%= host_port_cfg %>\\\" <%= configmap_filename %>"
