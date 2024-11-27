@@ -12,23 +12,23 @@ export port="$PORT_CFG"
 # setup password
 source /bin/save_passwd_as_secret
 export password="$PASSWORD"
-source /bin/create_salt_sha1
+source /bin/create_salt_and_sha1
 
 # write config file for JupyterLab
 export CONFIG_FILE=${PWD}/ondemand_config.py
 cat << EOF > "${CONFIG_FILE}"
-    c.FileContentsManager.delete_to_trash = False
-    c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
-    c.LabApp.extension_manager = 'pypi'
-    c.LabServerApp.copy_absolute_path = True
-    c.PluginManager.level = 'user'
-    c.ServerApp.allow_origin = '*'
-    c.ServerApp.base_url = "/node/${HOST_CFG}/${PORT_CFG}/"
-    c.ServerApp.disable_check_xsrf = True
-    c.ServerApp.ip = '0.0.0.0'
-    c.ServerApp.open_browser = False
-    c.ServerApp.password = u"sha1:${SALT}:${PASSWORD_SHA1}"
-    c.ServerApp.port = 8080
-    c.ServerApp.port_retries = 0
-    c.ServerApp.root_dir = "${HOME}"
+c.FileContentsManager.delete_to_trash = False
+c.LabApp.check_for_updates_class = 'jupyterlab.NeverCheckForUpdate'
+c.LabApp.extension_manager = 'pypi'
+c.LabServerApp.copy_absolute_path = True
+c.PluginManager.level = 'user'
+c.ServerApp.allow_origin = '*'
+c.ServerApp.base_url = "/node/${HOST_CFG}/${PORT_CFG}/"
+c.ServerApp.disable_check_xsrf = True
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.open_browser = False
+c.ServerApp.password = u"sha1:${SALT}:${PASSWORD_SHA1}"
+c.ServerApp.port = 8080
+c.ServerApp.port_retries = 0
+c.ServerApp.root_dir = "${HOME}"
 EOF
