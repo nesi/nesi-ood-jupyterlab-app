@@ -48,9 +48,14 @@ attributes:
     label: "Project Code"
     widget: select
     options:
+      <%- if groups.empty? -%>
+      - ["No valid Project Codes available", "", disabled: true]
+      <%- else -%>
+      - ["Select a Project Code", ""]
       <%- groups.each do |group| %>
       - "<%= group %>"
       <%- end %>
+      <%- end -%>
     required: true
   bc_num_hours:
     max: 24

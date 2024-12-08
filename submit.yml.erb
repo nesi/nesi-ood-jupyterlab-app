@@ -1,4 +1,9 @@
 <%
+   # Validate account field
+   if attributes.nil? || attributes[:account].nil? || attributes[:account].strip.empty?
+     raise "Project Code (account) is required and cannot be empty."
+   end
+
    user = OodSupport::User.new
 
    ood_nfs_server = Resolv.getaddress("ood-nfs-node")
