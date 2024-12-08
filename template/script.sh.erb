@@ -18,6 +18,11 @@ module purge
 # Load the require modules
 module load <%= context.jupyterlab_module %>
 
+# temporary workaround: custom kernels created on mahuika with our tool include "module load slurm"
+# but there is currently no slurm module on the new platform; this should be removed later when
+# there is a slurm module or we have a better solution
+export MODULEPATH=${MODULEPATH}:${SESSION_DIR}/modules
+
 # unload the OpenSSL module as it does not work properly (has a broken symbolic link)
 # however the OpenSSL installed in the docker image works fine
 # NOTE: may need to check this whenever the docker image is updated
