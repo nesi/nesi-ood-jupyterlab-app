@@ -55,6 +55,11 @@ script:
         path: /nesi/project
         destination_path: /nesi/project
       - type: nfs
+        name: wlgproject
+        host: <%= ood_nfs_server %>
+        path: /nesi/project
+        destination_path: /scale_wlg_persistent/filesets/project
+      - type: nfs
         name: nobackup
         host: <%= ood_nfs_server %>
         path: /nesi/nobackup
