@@ -1,8 +1,7 @@
 <%
    user = OodSupport::User.new
 
-   ood_nfs_server = Resolv.getaddress("ood-nfs-node")
-   software_nfs_server = Resolv.getaddress("external-nfs")
+   weka_nfs_server = Resolv.getaddress("weka-nfs")
    
    # Initialize nesi_gid to nil
    nesi_gid = nil
@@ -46,28 +45,28 @@ script:
     mounts:
       - type: nfs
         name: home
-        host: <%= ood_nfs_server %>
-        path: /nesi/home
-        destination_path: /nesi/home
+        host: <%= weka_nfs_server %>
+        path: /home
+        destination_path: /home
       - type: nfs
         name: project
-        host: <%= ood_nfs_server %>
-        path: /nesi/project
+        host: <%= weka_nfs_server %>
+        path: /project
         destination_path: /nesi/project
       - type: nfs
         name: wlgproject
-        host: <%= ood_nfs_server %>
-        path: /nesi/project
+        host: <%= weka_nfs_server %>
+        path: /project
         destination_path: /scale_wlg_persistent/filesets/project
       - type: nfs
         name: nobackup
-        host: <%= ood_nfs_server %>
-        path: /nesi/nobackup
+        host: <%= weka_nfs_server %>
+        path: /scratch
         destination_path: /nesi/nobackup
       - type: nfs
         name: software
-        host: <%= software_nfs_server %>
-        path: /mnt/data-migration
+        host: <%= weka_nfs_server %>
+        path: /software
         destination_path: /opt/nesi
       - type: host
         name: nss-socket
