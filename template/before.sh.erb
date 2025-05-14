@@ -11,7 +11,7 @@ export port="$PORT_CFG"
 
 # fix to resolve DNS lookup in flexi
 #export hostname=$(dig +short -x $HOST_CFG)
-export hostname=$(kubectl get pods $(hostname) -o jsonpath="{.spec.nodeName}").cloud.nesi.nz
+#export hostname=$(kubectl get pods $(hostname) -o jsonpath="{.spec.nodeName}").cloud.nesi.nz
 
 # setup password
 source /bin/save_passwd_as_secret
@@ -27,7 +27,7 @@ c.LabApp.extension_manager = 'pypi'
 c.LabServerApp.copy_absolute_path = True
 c.PluginManager.level = 'user'
 c.ServerApp.allow_origin = '*'
-c.ServerApp.base_url = "/node/${hostname}/${PORT_CFG}/"
+c.ServerApp.base_url = "/node/${host}/${PORT_CFG}/"
 c.ServerApp.disable_check_xsrf = True
 c.ServerApp.ip = '0.0.0.0'
 c.ServerApp.open_browser = False
