@@ -1,6 +1,128 @@
+<%
+  # The connect object is available and contains the connection info
+  host = connect.host
+  port = connect.port
+  password = connect.password
+%>
+
+<!-- Debug Connection Info -->
+<div class="panel panel-danger">
+  <div class="panel-heading">
+    <h3 class="panel-title">Connection IP Debugging</h3>
+  </div>
+  <div class="panel-body">
+    <h4>Current Connection Settings:</h4>
+    <dl class="dl-horizontal">
+      <dt>Configured Host:</dt>
+      <dd><strong><%= host %></strong></dd>
+      <dt>Configured Port:</dt>
+      <dd><strong><%= port %></strong></dd>
+    </dl>
+    
+    <h4>Server Network Interfaces:</h4>
+    <pre><%= begin
+      output = `ip -4 addr show | grep inet | grep -v 127.0.0.1`
+      output.empty? ? "No interfaces found" : output
+    rescue => e
+      "Error: #{e.message}"
+    end %></pre>
+    
+    <h4>IP Comparison:</h4>
+    <%
+      # Get all IPs on this system
+      local_ips = `ip -4 addr show | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | cut -d/ -f1`.split("\n")
+      is_local = local_ips.include?(host)
+    %>
+    <div class="alert <%= is_local ? 'alert-warning' : 'alert-danger' %>">
+      <strong>Status:</strong> 
+      <% if is_local %>
+        Host IP <%= host %> is configured on this server
+      <% else %>
+        Host IP <%= host %> is NOT on this server!
+        <br>Available IPs: <%= local_ips.join(", ") %>
+      <% end %>
+    </div>
+    
+    <h4>Network Route to <%= host %>:</h4>
+    <pre><%= begin
+      `ip route get #{host} 2>&1`
+    rescue => e
+      "Error: #{e.message}"
+    end %></pre>
+    
+    <h4>ARP Table Entry:</h4>
+    <pre><%= begin
+      `arp -n | grep #{host} 2>&1` || "No ARP entry found"
+    rescue => e
+      "Error: #{e.message}"
+    end %></pre>
+    
+    <h4>Session Working Directory:</h4>
+    <% session_dir = connect.instance_variable_get(:@table)[:working_dir] rescue nil %>
+    <% if session_dir %>
+      <code><%= session_dir %></code>
+      <h5>Files in session directory:</h5>
+      <pre><%= begin
+        Dir.entries(session_dir).select { |f| !f.start_with?('.') }.join("\n")
+      rescue => e
+        "Error: #{e.message}"
+      end %></pre>
+    <% else %>
+      <p>Session directory not found in connect object</p>
+    <% end %>
+    
+    <h4>Debugging the wrong IP issue:</h4>
+    <div class="alert alert-info">
+      <p>The IP <%= host %> appears to be from a different host/node in your cluster.</p>
+      <p>Possible causes:</p>
+      <ul>
+        <li>The job is running on a different compute node but the view is being rendered on the OnDemand server</li>
+        <li>The `/bin/find_host_port` script is returning the IP of the compute node where the job is running</li>
+        <li>There might be a network routing issue between the OnDemand server and the compute node</li>
+      </ul>
+    </div>
+    
+    <h4>Environment Variables from Job:</h4>
+    <% job_env_vars = ENV.select { |k, v| k =~ /SLURM|PBS|LSF|SGE|HOST_CFG|PORT_CFG/ } %>
+    <% if job_env_vars.any? %>
+      <table class="table table-condensed">
+        <tr><th>Variable</th><th>Value</th></tr>
+        <% job_env_vars.sort.each do |key, value| %>
+          <tr><td><code><%= key %></code></td><td><code><%= value %></code></td></tr>
+        <% end %>
+      </table>
+    <% else %>
+      <p>No job-related environment variables found</p>
+    <% end %>
+  </div>
+</div>
+
+<!-- Form -->
 <form action="/node/<%= host %>/<%= port %>/login" method="post" target="_blank">
   <input type="hidden" name="password" value="<%= password %>">
   <button class="btn btn-primary" type="submit">
     <i class="fa fa-eye"></i> Connect to Jupyter
   </button>
 </form>
+
+<!-- Additional debugging for the session -->
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">Session Information</h3>
+  </div>
+  <div class="panel-body">
+    <h4>Connect Object Full Details:</h4>
+    <pre><%= JSON.pretty_generate(connect.to_h) rescue connect.inspect %></pre>
+    
+    <h4>Check for output.log or similar files:</h4>
+    <% log_files = Dir.glob("*.log") + Dir.glob("*.out") + Dir.glob("*.err") %>
+    <% if log_files.any? %>
+      <% log_files.each do |file| %>
+        <h5><%= file %>:</h5>
+        <pre style="max-height: 200px; overflow-y: auto;"><%= File.read(file).split("\n").last(20).join("\n") rescue "Cannot read #{file}" %></pre>
+      <% end %>
+    <% else %>
+      <p>No log files found in current directory</p>
+    <% end %>
+  </div>
+</div>
