@@ -33,17 +33,15 @@
    all_supplemental_groups = [nesi_gid].compact + additional_gids
 %>
 ---
-batch_connect:
-  template: "basic"
-  conn_params:
-    - csrf_token
 script:
+  accounting_id: "<%= account %>"
   wall_time: "<%= bc_num_hours.to_i * 3600 %>"
   native:
     container:
-      name: "<%= account.present? ? "rstudio-#{account}" : 'rstudio' %>"
+      name: "<%= account.present? ? "jupyterlab-#{account}" : 'jupyterlab' %>"
       image: "ghcr.io/nesi/nesi-docker-base:v0.2.0"
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
+      working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
       restart_policy: 'OnFailure'
       <% if all_supplemental_groups.any? %>
       supplemental_groups:
@@ -52,8 +50,17 @@ script:
         <% end %>
       <% end %>
       env:
-        TZ: "Pacific/Auckland"
+        PERIOD_SECONDS: "10"
+        OPTIONS: -k <%= user.name %>@KAHU-DEV.FLEXI.NZ
+        NB_UID: "<%= user.uid %>"
+        NB_USER: "<%= user.name %>"
+        NB_GID: "<%= account.present? ? account : user.group.id %>"
+        HOME: "<%= user.home %>"
+        LOG_DIR: "<%= staged_root %>"
+        SHELL: "/bin/bash"
         LMOD_SITE_MODULEPATH: "/opt/nesi/CS400_centos7_bdw/modules/all"
+        TZ: 'Pacific/Auckland'
+        JUPYTER_JOB_ACCOUNT: "<%= account %>"
         PRIMARY_PROJECT: "<%= account %>"
         <% if additional_projects.present? %>
         ADDITIONAL_PROJECTS: "<%= Array(additional_projects).join(':') %>"
@@ -72,6 +79,11 @@ script:
         host: <%= weka_nfs_server %>
         path: /project
         destination_path: /nesi/project
+      - type: nfs
+        name: wlgproject
+        host: <%= weka_nfs_server %>
+        path: /project
+        destination_path: /scale_wlg_persistent/filesets/project
       - type: nfs
         name: nobackup
         host: <%= weka_nfs_server %>
@@ -92,28 +104,3 @@ script:
         host_type: File
         path: /etc/nsswitch.conf
         destination_path: /etc/nsswitch.conf
-    configmap:
-      files:
-        - filename: "logging.conf"
-          data: |
-            [*]
-            log-level=debug
-            logger-type=file
-            log-dir=<%= staged_root %>/logs
-          mount_path: '/etc/rstudio'
-        - filename: "database.conf"
-          data: |
-            directory=/tmp/lib/rstudio-server
-          mount_path: '/etc/rstudio/database'
-        - filename: 'k8_helper'
-          data: |
-            #!/usr/bin/env bash
-
-            set -x
-
-            KEY=$1
-            VALUE=$(echo -n $2 | base64)
-            CFG="$(hostname)-secret"
-
-            kubectl get secret ${CFG} -o json | jq --arg key $KEY --arg value $VALUE '.data[$key] = $value'  | kubectl apply -f -
-          mount_path: '/opt/open_ondemand/helpers'
