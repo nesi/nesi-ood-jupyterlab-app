@@ -75,6 +75,11 @@ script:
         path: /home
         destination_path: /home
       - type: nfs
+        name: wlghome
+        host: <%= weka_nfs_server %>
+        path: /home
+        destination_path: /scale_wlg_persistent/filesets/home
+      - type: nfs
         name: project
         host: <%= weka_nfs_server %>
         path: /project
