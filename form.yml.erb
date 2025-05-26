@@ -25,10 +25,11 @@ attributes:
     widget: select
     label: "JupyterLab module"
     options:
+      - [ "2025.5.0-foss-2023a-4.4.2", "JupyterLab/2025.5.0-foss-2023a-4.4.2" ]
       - [ "2024.08.2-foss-2023a-4.2.4", "JupyterLab/2024.08.2-foss-2023a-4.2.4" ]
+    cacheable: false  # default to latest (first in list)
 
-  # Any extra command line arguments to feed to the `jupyter notebook ...`
-  # command that launches the Jupyter notebook within the batch job
+  # not used
   extra_jupyter_args: ""
   
   node: ""
