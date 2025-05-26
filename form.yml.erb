@@ -19,28 +19,16 @@ cluster: "my-k8s-cluster"
 # Define attribute values that aren't meant to be modified by the user within
 # the Dashboard form
 attributes:
-  # Set the corresponding modules that need to be loaded for Jupyter to run
-  #
-  # @note It is called within the batch job as `module load <modules>` if
-  #   defined
-  # @example Do not load any modules
-  #     modules: ""
-  # @example Using default python module
-  #     modules: "python"
-  # @example Using specific python module
-  #     modules: "python/3.5"
-  # @example Using combination of modules
-  #     modules: "python/3.5 cuda/8.0.44"
+  # allow user to choose which jupyterlab module is loaded
   jupyterlab_module:
     widget: select
     label: "JupyterLab module"
     options:
+      - [ "2025.5.0-foss-2023a-4.4.2", "JupyterLab/2025.5.0-foss-2023a-4.4.2" ]
       - [ "2024.08.2-foss-2023a-4.2.4", "JupyterLab/2024.08.2-foss-2023a-4.2.4" ]
-#      - [ "2024.08.1-foss-2023a-4.2.4", "JupyterLab/.2024.08.1-foss-2023a-4.2.4" ]
-#      - [ "2024.08.0-foss-2023a-4.2.4", "JupyterLab/2024.08.0-foss-2023a-4.2.4" ]
+    cacheable: false  # default to latest (first in list)
 
-  # Any extra command line arguments to feed to the `jupyter notebook ...`
-  # command that launches the Jupyter notebook within the batch job
+  # not used
   extra_jupyter_args: ""
   
   node: ""
