@@ -9,41 +9,30 @@
 # @note Used to define the submitted cluster, title, description, and
 #   hard-coded/user-defined attributes that make up this Batch Connect app.
 ---
-
-# **MUST** set cluster id here that matches cluster configuration file located
-# under /etc/ood/config/clusters.d/*.yml
-# @example Use the Owens cluster at Ohio Supercomputer Center
-#     cluster: "owens"
-cluster: "my-k8s-cluster"
-
 # Define attribute values that aren't meant to be modified by the user within
 # the Dashboard form
 attributes:
-  # Set the corresponding modules that need to be loaded for Jupyter to run
-  #
-  # @note It is called within the batch job as `module load <modules>` if
-  #   defined
-  # @example Do not load any modules
-  #     modules: ""
-  # @example Using default python module
-  #     modules: "python"
-  # @example Using specific python module
-  #     modules: "python/3.5"
-  # @example Using combination of modules
-  #     modules: "python/3.5 cuda/8.0.44"
+  # select the cluster
+  cluster:
+    widget: "select"
+    options:
+      - ["Kubernetes", "my-k8s-cluster"]
+      - ["Slurm HPC", "nesi_tdc_hpc"]
+    cacheable: false  # we always want k8s at the top?
+
+  # allow user to choose which jupyterlab module is loaded
   jupyterlab_module:
     widget: select
     label: "JupyterLab module"
     options:
       - [ "2024.08.2-foss-2023a-4.2.4", "JupyterLab/2024.08.2-foss-2023a-4.2.4" ]
-#      - [ "2024.08.1-foss-2023a-4.2.4", "JupyterLab/.2024.08.1-foss-2023a-4.2.4" ]
-#      - [ "2024.08.0-foss-2023a-4.2.4", "JupyterLab/2024.08.0-foss-2023a-4.2.4" ]
 
   # Any extra command line arguments to feed to the `jupyter notebook ...`
   # command that launches the Jupyter notebook within the batch job
   extra_jupyter_args: ""
   
   node: ""
+
   account:
     label: "Project Code"
     widget: select
@@ -52,18 +41,21 @@ attributes:
       - "<%= group %>"
       <%- end %>
     required: true
+
   bc_num_hours:
     max: 24
     min: 1
     step: 1
     value: 1
     widget: number_field
+
   num_cores:
     label: Number of cores
     min: 1
     value: 2
     max: 4
     widget: number_field
+
   num_mem:
     label: Memory per job (GB)
     max: 64
@@ -71,7 +63,6 @@ attributes:
     step: 1
     value: 2
     widget: number_field
-
 
 # All of the attributes that make up the Dashboard form (in respective order),
 # and made available to the submit configuration file and the template ERB
@@ -83,6 +74,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
+  - cluster
   - account
   - jupyterlab_module
   - extra_jupyter_args

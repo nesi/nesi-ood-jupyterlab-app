@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Benchmark info
 echo "TIMING - Starting main script at: $(date)"
@@ -7,6 +7,13 @@ export SESSION_DIR="${PWD}"
 
 # Set working directory to home directory
 cd "${HOME}"
+
+# TODO: MODULEPATH was wrong, had to manually set, look into why
+echo "PATH is: ${PATH}"
+echo "MODULEPATH is: ${MODULEPATH}"
+export MODULEPATH=/opt/nesi/modulefiles/generic:/opt/nesi/lmod/zen3:/opt/nesi/lmod/mahuika
+echo "MODULEPATH is: ${MODULEPATH}"
+printenv > ${SESSION_DIR}/printenv.txt
 
 #
 # Start Jupyter Notebook Server
@@ -18,14 +25,14 @@ module purge
 # Load the require modules
 module load <%= context.jupyterlab_module %>
 
-# temporary workaround: custom kernels created on mahuika with our tool include "module load slurm"
-# but there is currently no slurm module on the new platform; this should be removed later when
-# there is a slurm module or we have a better solution
+# temporary workaround: custom kernels created on mahuika with our tool include "module load NeSI slurm"
+# but those modules don't exist on the new platform
 export MODULEPATH=${MODULEPATH}:${SESSION_DIR}/modules
 
 # unload the OpenSSL module as it does not work properly (has a broken symbolic link)
 # however the OpenSSL installed in the docker image works fine
 # NOTE: may need to check this whenever the docker image is updated
+# TODO: check if needed with newly built jupyter modules; not sure if needed in hpc context
 ml -OpenSSL
 
 # List loaded modules

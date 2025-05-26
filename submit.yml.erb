@@ -33,6 +33,7 @@
    all_supplemental_groups = [nesi_gid].compact + additional_gids
 %>
 ---
+<% if cluster == "my-k8s-cluster" -%>
 script:
   accounting_id: "<%= account %>"
   wall_time: "<%= bc_num_hours.to_i * 3600 %>"
@@ -109,3 +110,15 @@ script:
         host_type: File
         path: /etc/nsswitch.conf
         destination_path: /etc/nsswitch.conf
+<%- else -%>
+script:
+  accounting_id: "<%= account %>"
+  wall_time: "<%= bc_num_hours.to_i * 3600 %>"
+  native:
+    - "--ntasks"
+    - "1"
+    - "--cpus-per-task"
+    - "<%= num_cores %>"
+    - "--mem"
+    - "<%= num_mem %>G"
+<%- end -%>
