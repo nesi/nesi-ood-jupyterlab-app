@@ -32,6 +32,8 @@ SALT="$(create_passwd 16)"
 password="$(create_passwd 16)"
 PASSWORD_SHA1="$(echo -n "${password}${SALT}" | openssl dgst -sha1 | awk '{print $NF}')"
 
+export JUPYTER_JOB_ACCOUNT="<%= context.account %>"
+
 <%- end -%>
 
 # write config file for JupyterLab
