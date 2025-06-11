@@ -25,8 +25,19 @@ module purge
 # Load the require modules
 module load <%= context.jupyterlab_module %>
 
-# temporary workaround: custom kernels created on mahuika with our tool include "module load NeSI slurm"
-# but those modules don't exist on the new platform
+## Fix terminal colors for ls command with a wrapper script for system ls
+mkdir -p ~/ondemand/ood_bin
+cat > ~/ondemand/ood_bin/ls <<'EOF'
+#!/bin/bash
+/usr/bin/ls --color=auto "$@"
+EOF
+
+chmod +x ~/ondemand/ood_bin/ls
+export PATH="$HOME/ondemand/ood_bin:$PATH"
+    
+# temporary workaround: custom kernels created on mahuika with our tool include "module load slurm"
+# but there is currently no slurm module on the new platform; this should be removed later when
+# there is a slurm module or we have a better solution
 export MODULEPATH=${MODULEPATH}:${SESSION_DIR}/modules
 
 # unload the OpenSSL module as it does not work properly (has a broken symbolic link)

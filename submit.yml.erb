@@ -40,7 +40,7 @@ script:
   native:
     container:
       name: "<%= account.present? ? "jupyterlab-#{account}" : 'jupyterlab' %>"
-      image: "ghcr.io/nesi/nesi-docker-base:v0.5.0"
+      image: "ghcr.io/nesi/nesi-docker-base:v0.6.0"
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
       working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
       restart_policy: 'OnFailure'
@@ -59,7 +59,7 @@ script:
         HOME: "<%= user.home %>"
         LOG_DIR: "<%= staged_root %>"
         SHELL: "/bin/bash"
-        LMOD_SITE_MODULEPATH: "/opt/nesi/CS400_centos7_bdw/modules/all:/opt/nesi/lmod/generic:/opt/nesi/lmod/zen3:/opt/nesi/lmod/mahuika"
+        LMOD_SITE_MODULEPATH: "/opt/nesi/lmod/generic:/opt/nesi/lmod/zen3:/opt/nesi/lmod/mahuika"
         TZ: 'Pacific/Auckland'
         JUPYTER_JOB_ACCOUNT: "<%= account %>"
         PRIMARY_PROJECT: "<%= account %>"
