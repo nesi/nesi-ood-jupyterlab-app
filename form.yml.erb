@@ -2,6 +2,11 @@
   groups = OodSupport::User.new.groups.sort_by(&:id).tap { |groups|
     groups.unshift(groups.delete(OodSupport::Process.group))
   }.map(&:name).grep(/.*[0-9]{5}/)
+
+  all_groups = OodSupport::User.new.groups.sort_by(&:id).tap { |groups|
+    groups.unshift(groups.delete(OodSupport::Process.group))
+  }.map(&:name)
+  has_slurm_apps = all_groups.include?("nesi-staff") || all_groups.include?("ondemand-slurm-apps") || all_groups.include?("uoa00040")
 -%>
 
 # Batch Connect app configuration file
@@ -17,7 +22,9 @@ attributes:
     widget: "select"
     options:
       - ["Kubernetes", "my-k8s-cluster"]
+<% if has_slurm_apps %>
       - ["Slurm HPC", "nesi_tdc_hpc"]
+<% end %>
     cacheable: false  # we always want k8s at the top?
 
   # allow user to choose which jupyterlab module is loaded
