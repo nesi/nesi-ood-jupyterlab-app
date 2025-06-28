@@ -59,7 +59,10 @@ script:
         HOME: "<%= user.home %>"
         LOG_DIR: "<%= staged_root %>"
         SHELL: "/bin/bash"
-        LMOD_SITE_MODULEPATH: "/opt/nesi/lmod/generic:/opt/nesi/lmod/zen3:/opt/nesi/lmod/mahuika"
+        LMOD_CONFIG_DIR: "/opt/nesi/etc/lmod"
+        MODULEPATH_ROOT: "/opt/nesi/lmod"
+        MODULEPATH: "/opt/nesi/lmod/generic"
+        BASH_ENV: "/usr/share/lmod/lmod/init/bash"
         TZ: 'Pacific/Auckland'
         JUPYTER_JOB_ACCOUNT: "<%= account %>"
         PRIMARY_PROJECT: "<%= account %>"
@@ -121,4 +124,8 @@ script:
     - "<%= num_cores %>"
     - "--mem"
     - "<%= num_mem %>G"
+<%- if gpu != "none" -%>
+    - "--gpus-per-node"
+    - "<%= gpu %>"
+<%- end -%>
 <%- end -%>

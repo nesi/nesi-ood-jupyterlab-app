@@ -21,9 +21,16 @@ attributes:
   cluster:
     widget: "select"
     options:
-      - ["Kubernetes", "my-k8s-cluster"]
+      - [
+          "Kubernetes", "my-k8s-cluster",
+          data-hide-gpu: true,
+          data-set-gpu: 'none',
+        ]
 <% if has_slurm_apps %>
       - ["Slurm HPC", "nesi_tdc_hpc"]
+    help: |
+      Kubernetes jobs are more likely to start promptly - "Slurm HPC" jobs may have to wait in the queue.
+      If you need Apptainer or GPUs then you must choose "Slurm HPC" currently.
 <% end %>
     cacheable: false  # we always want k8s at the top?
 
@@ -49,6 +56,7 @@ attributes:
       - "<%= group %>"
       <%- end %>
     required: true
+    display: true
 
   bc_num_hours:
     max: 24
@@ -63,6 +71,7 @@ attributes:
     value: 2
     max: 4
     widget: number_field
+    display: true
 
   num_mem:
     label: Memory per job (GB)
@@ -71,6 +80,18 @@ attributes:
     step: 1
     value: 2
     widget: number_field
+    display: true
+
+  gpu:
+    label: GPU
+    widget: select
+    options:
+      - 'none'
+      - [ "L4 (24 GB VRAM, aimed at AI workloads, up to single precision)", 'L4' ]
+      - [ "H100 (96 GB VRAM, recommend sumitting as Slurm jobs due to potential wait times)", "H100" ]
+    help: |
+      **WARNING**: selecting a GPU can significantly increase the time it takes for your session to start!
+    display: true
 
 # All of the attributes that make up the Dashboard form (in respective order),
 # and made available to the submit configuration file and the template ERB
@@ -89,6 +110,7 @@ form:
   - bc_num_hours
   - num_cores
   - num_mem
+  - gpu
   - node
 description: Request a Jupyter Lab server
 submit: submit.yml.erb
