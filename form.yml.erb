@@ -6,7 +6,7 @@
   all_groups = OodSupport::User.new.groups.sort_by(&:id).tap { |groups|
     groups.unshift(groups.delete(OodSupport::Process.group))
   }.map(&:name)
-  has_slurm_apps = all_groups.include?("nesi-staff") || all_groups.include?("ondemand-slurm-apps") || all_groups.include?("uoa00040")
+  has_slurm_apps = all_groups.include?("nesi-staff") || all_groups.include?("ondemand-slurm-apps")
 -%>
 
 # Batch Connect app configuration file
@@ -88,7 +88,7 @@ attributes:
     options:
       - 'none'
       - [ "L4 (24 GB VRAM, aimed at AI workloads, up to single precision)", 'L4' ]
-      - [ "H100 (96 GB VRAM, recommend sumitting as Slurm jobs due to potential wait times)", "H100" ]
+      - [ "H100 (96 GB VRAM, recommend submitting as Slurm jobs due to potential wait times)", "H100" ]
     help: |
       **WARNING**: selecting a GPU can significantly increase the time it takes for your session to start!
     display: true
