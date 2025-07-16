@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Benchmark info
 echo "TIMING - Starting main script at: $(date)"
@@ -7,6 +7,14 @@ export SESSION_DIR="${PWD}"
 
 # Set working directory to home directory
 cd "${HOME}"
+
+# TODO: NeSI/zen3 was not loaded, look into it
+echo "list modules:"
+ml
+echo "load NeSI/zen3"
+ml NeSI/zen3
+echo "list modules:"
+ml
 
 #
 # Start Jupyter Notebook Server
@@ -36,6 +44,7 @@ export MODULEPATH=${MODULEPATH}:${SESSION_DIR}/modules
 # unload the OpenSSL module as it does not work properly (has a broken symbolic link)
 # however the OpenSSL installed in the docker image works fine
 # NOTE: may need to check this whenever the docker image is updated
+# TODO: check if needed with newly built jupyter modules; not sure if needed in hpc context
 ml -OpenSSL
 
 # List loaded modules
