@@ -17,6 +17,16 @@
 # Define attribute values that aren't meant to be modified by the user within
 # the Dashboard form
 attributes:
+  # Add reset workspace option
+  reset_workspace:
+    widget: "check_box"
+    label: "Reset Jupyter workspace before starting"
+    help: |
+      Check this box to clear workspace files that may cause 503 errors with large files.
+      This will delete ~/.jupyter/lab/workspaces/* before starting your session.
+    value: false
+    cacheable: false
+
   # select the cluster
   cluster:
     widget: "select"
@@ -103,6 +113,7 @@ attributes:
 #   option, then it will not appear in the form page that the user sees in the
 #   Dashboard
 form:
+  - reset_workspace  # Add this at the top for visibility
   - cluster
   - account
   - jupyterlab_module
