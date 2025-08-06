@@ -20,10 +20,12 @@ attributes:
   # Add reset workspace option
   reset_workspace:
     widget: "check_box"
-    label: "Reset Jupyter workspace before starting"
+    label: "⚠️ Reset Jupyter workspace before starting"
     help: |
-      Check this box to clear workspace files that may cause 503 errors with large files.
+      <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin-top: 5px;">
+      <strong>Important:</strong> Check this box to clear workspace files that may cause 503 errors with large files.
       This will delete ~/.jupyter/lab/workspaces/* before starting your session.
+      </div>
     value: false
     cacheable: false
 
