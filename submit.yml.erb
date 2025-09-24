@@ -1,7 +1,19 @@
 <%
    user = OodSupport::User.new
-
    weka_nfs_server = Resolv.getaddress("weka-nfs")
+   
+   # Reset workspace if requested
+   if reset_workspace == "1"
+     workspace_path = File.join(user.home, '.jupyter', 'lab', 'workspaces')
+     if Dir.exist?(workspace_path)
+       begin
+         Dir.glob(File.join(workspace_path, '*')).each { |f| FileUtils.rm_rf(f) }
+         Rails.logger.info "Jupyter workspace reset for user: #{user.name}"
+       rescue => e
+         Rails.logger.error "Failed to reset Jupyter workspace for user #{user.name}: #{e.message}"
+       end
+     end
+   end
    
    # Initialize nesi_gid to nil
    nesi_gid = nil
@@ -11,8 +23,30 @@
      nesi_group = Etc.getgrnam(account)  # Fetching the group based on the account
      nesi_gid = nesi_group ? nesi_group.gid : nil  # Get the GID, or nil if not found
    end
+   
+   # Get ALL groups the user belongs to that match the project pattern
+   # Same approach as used in form.yml
+   all_user_groups = OodSupport::User.new.groups.sort_by(&:id).tap { |groups|
+     groups.unshift(groups.delete(OodSupport::Process.group))
+   }.map(&:name)
+   
+   # Collect GIDs for ALL user's projects (not just selected ones)
+   additional_gids = []
+   all_user_groups.each do |project|
+     begin
+       project_group = Etc.getgrnam(project)
+       additional_gids << project_group.gid if project_group && project_group.gid != nesi_gid
+     rescue ArgumentError
+       # Handle case where group doesn't exist
+       Rails.logger.warn "Group not found for project: #{project}"
+     end
+   end
+   
+   # Combine all supplemental groups
+   all_supplemental_groups = [nesi_gid].compact + additional_gids
 %>
 ---
+<% if cluster == "my-k8s-cluster" -%>
 script:
   accounting_id: "<%= account %>"
   wall_time: "<%= bc_num_hours.to_i * 3600 %>"
@@ -23,9 +57,11 @@ script:
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
       working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
       restart_policy: 'OnFailure'
-      <% if nesi_gid %>
+      <% if all_supplemental_groups.any? %>
       supplemental_groups:
-        - <%= nesi_gid %>
+        <% all_supplemental_groups.each do |gid| %>
+        - <%= gid %>
+        <% end %>
       <% end %>
       env:
         PERIOD_SECONDS: "10"
@@ -36,9 +72,16 @@ script:
         HOME: "<%= user.home %>"
         LOG_DIR: "<%= staged_root %>"
         SHELL: "/bin/bash"
-        LMOD_SITE_MODULEPATH: "/opt/nesi/CS400_centos7_bdw/modules/all"
+        LMOD_CONFIG_DIR: "/opt/nesi/etc/lmod"
+        MODULEPATH_ROOT: "/opt/nesi/lmod"
+        MODULEPATH: "/opt/nesi/lmod/generic"
+        BASH_ENV: "/usr/share/lmod/lmod/init/bash"
         TZ: 'Pacific/Auckland'
         JUPYTER_JOB_ACCOUNT: "<%= account %>"
+        PRIMARY_PROJECT: "<%= account %>"
+        <% if additional_projects.present? %>
+        ADDITIONAL_PROJECTS: "<%= Array(additional_projects).join(':') %>"
+        <% end %>
       port: "8080"
       cpu: "<%= num_cores %>"
       memory: "<%= num_mem %>Gi"
@@ -53,11 +96,6 @@ script:
         host: <%= weka_nfs_server %>
         path: /project
         destination_path: /nesi/project
-      - type: nfs
-        name: wlgproject
-        host: <%= weka_nfs_server %>
-        path: /project
-        destination_path: /scale_wlg_persistent/filesets/project
       - type: nfs
         name: nobackup
         host: <%= weka_nfs_server %>
@@ -78,3 +116,19 @@ script:
         host_type: File
         path: /etc/nsswitch.conf
         destination_path: /etc/nsswitch.conf
+<%- else -%>
+script:
+  accounting_id: "<%= account %>"
+  wall_time: "<%= bc_num_hours.to_i * 3600 %>"
+  native:
+    - "--ntasks"
+    - "1"
+    - "--cpus-per-task"
+    - "<%= num_cores %>"
+    - "--mem"
+    - "<%= num_mem %>G"
+<%- if gpu != "none" -%>
+    - "--gpus-per-node"
+    - "<%= gpu %>"
+<%- end -%>
+<%- end -%>
