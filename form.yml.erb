@@ -9,7 +9,9 @@
   
   has_slurm_apps = all_groups.include?("nesi-staff") || all_groups.include?("ondemand-slurm-apps")
   
-  restricted_projects = ["nesi02659", "nesi99991"]
+  restricted_projects = ["nesi02659"]
+
+  nesi_training_projects = ["nesi99991"]
 -%>
 
 # Batch Connect app configuration file
@@ -76,6 +78,11 @@ attributes:
           data-set-memory: 4,
           data-hide-cores: true,
           data-set-cores: 2
+          <% elsif nesi_training_projects.include?(group) %>
+          data-hide-memory: true,
+          data-set-memory: 32,
+          data-hide-cores: true,
+          data-set-cores: 4
           <% end %>
         ]
       <%- end %>
