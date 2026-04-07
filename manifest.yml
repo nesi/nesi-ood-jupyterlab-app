@@ -1,6 +1,6 @@
 ---
 name: JupyterLab
-category: Interactive Apps
+category: Applications
 subcategory: Servers
 role: batch_connect
 description: |
