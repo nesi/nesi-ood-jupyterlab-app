@@ -1,6 +1,6 @@
 ---
 name: JupyterLab
-category: Applications
+category: Interactive Development
 role: batch_connect
 description: |
   This app will launch JupyterLab on one or more nodes.
