@@ -62,3 +62,16 @@ c.ServerApp.port_retries = 0
 c.ServerApp.root_dir = "${HOME}"
 c.ServerApp.terminado_settings = {'shell_command': ['/bin/bash', '--login', '-i']}
 EOF
+
+# Fix for jumpy scrolling in JupyterLab 4.x
+# Define the settings directory (Jupyter looks in ~/.jupyter/lab/user-settings by default)
+# You can also customize this path in your CONFIG_FILE using c.LabApp.user_settings_dir
+SETTINGS_DIR="${HOME}/.jupyter/lab/user-settings/@jupyterlab/notebook-extension"
+mkdir -p "${SETTINGS_DIR}"
+
+# Create the tracker configuration file
+cat << EOF > "${SETTINGS_DIR}/tracker.jupyterlab-settings"
+{
+  "windowingMode": "defer"
+}
+EOF
