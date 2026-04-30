@@ -79,12 +79,19 @@ script:
         TZ: 'Pacific/Auckland'
         JUPYTER_JOB_ACCOUNT: "<%= account %>"
         PRIMARY_PROJECT: "<%= account %>"
+        OMP_NUM_THREADS: "<%= cores %>"
         <% if additional_projects.present? %>
         ADDITIONAL_PROJECTS: "<%= Array(additional_projects).join(':') %>"
         <% end %>
       port: "8080"
       cpu: "<%= cores %>"
       memory: "<%= memory %>Gi"
+      startup_probe:
+        tcp_socket:
+          port: 8080
+        initial_delay_seconds: 20
+        period_seconds: 10
+        failure_threshold: 20
     mounts:
       - type: host
         name: home
